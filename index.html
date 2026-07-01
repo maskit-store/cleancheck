@@ -26,6 +26,14 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
@@ -33,7 +41,7 @@
   <!-- Header dengan Gradasi Turquoise Modern -->
   <header class="bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-md">
     <div class="max-w-md mx-auto px-6 py-4 flex items-center space-x-3.5">
-      <!-- Logo PT SKI dengan fallback otomatis jika gambar bermasalah -->
+      <!-- Logo PT SKI dengan fallback otomatis jika gambar bermasalah atau belum diupload -->
       <img src="logo SKI 2.jpg" alt="Logo PT SKI" 
         class="h-12 w-12 object-contain rounded-xl bg-white p-1 shadow-sm border border-teal-100" 
         onerror="this.src='https://placehold.co/150x150/0ea5e9/ffffff?text=SKI'">
@@ -44,114 +52,80 @@
     </div>
   </header>
 
+  <!-- Peringatan Unggah Multi-File (Warning Banner) -->
+  <div class="max-w-md mx-auto w-full px-4 pt-4">
+    <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider mb-0.5">Peringatan Pengiriman Data</h4>
+        <p class="text-[11px] leading-relaxed text-amber-700 font-medium">
+          Mengunggah beberapa titik lokasi sekaligus membutuhkan jaringan internet yang stabil. Jika koneksi Anda lambat, direkomendasikan untuk mencicil pengiriman (misal: 3 s.d. 5 lokasi per kiriman) agar tidak terjadi gagal unggah.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content -->
-  <main class="max-w-md mx-auto w-full px-4 py-6 flex-grow">
+  <main class="max-w-md mx-auto w-full px-4 py-4 flex-grow">
     <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 space-y-6">
       
       <!-- Formulir Checklist -->
-      <form id="checklistForm" class="space-y-5" onsubmit="handleSubmit(event)">
+      <form id="checklistForm" class="space-y-6" onsubmit="handleSubmit(event)">
         
-        <!-- Input Nama Lengkap -->
-        <div>
-          <label for="inputFullName" class="block text-sm font-semibold text-slate-700 mb-1.5">
-            Nama Lengkap <span class="text-red-500">*</span>
-          </label>
-          <input type="text" id="inputFullName" required placeholder="Masukkan nama lengkap Anda"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800 font-medium"
-            oninput="validateForm()">
-        </div>
-
-        <!-- Pemilih Tanggal -->
-        <div>
-          <label for="inputDate" class="block text-sm font-semibold text-slate-700 mb-1.5">
-            Pilih Tanggal Laporan <span class="text-red-500">*</span>
-          </label>
-          <input type="date" id="inputDate" required
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800 font-medium"
-            onchange="validateForm()">
-        </div>
-
-        <!-- Pemilih Lokasi dengan Fitur Pencarian (Searchable Combobox) -->
-        <div class="relative">
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">
-            Cari & Pilih Titik Lokasi Kebersihan <span class="text-red-500">*</span>
-          </label>
-          
-          <div class="relative">
-            <!-- Input Pencarian -->
-            <input type="text" id="locationSearch" placeholder="Ketik untuk mencari lokasi..." autocomplete="off"
-              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800 font-medium pr-10"
-              onfocus="showDropdown()" oninput="filterLocations()">
-            
-            <!-- Icon Dropdown Arrow / Search -->
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
+        <!-- Identitas Karyawan & Tanggal -->
+        <div class="grid grid-cols-1 gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+          <!-- Input Nama Lengkap -->
+          <div>
+            <label for="inputFullName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Nama Lengkap <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="inputFullName" required placeholder="Masukkan nama lengkap Anda"
+              class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800 font-medium"
+              oninput="validateForm()">
           </div>
 
-          <!-- Hidden Input untuk menyimpan nilai lokasi asli -->
-          <input type="hidden" id="selectedLocation" required>
-
-          <!-- Dropdown Options Panel -->
-          <div id="locationDropdown" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar">
-            <!-- Lokasi yang difilter akan masuk ke sini lewat JavaScript -->
-            <div id="locationOptionsList"></div>
+          <!-- Pemilih Tanggal -->
+          <div>
+            <label for="inputDate" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Tanggal Laporan <span class="text-red-500">*</span>
+            </label>
+            <input type="date" id="inputDate" required
+              class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800 font-medium"
+              onchange="validateForm()">
           </div>
         </div>
 
-        <!-- Input Manual Lokasi jika pilih 'Lainnya' -->
-        <div id="customLocationWrapper" class="hidden">
-          <label for="customLocation" class="block text-sm font-semibold text-slate-700 mb-1.5">
-            Tulis Nama Lokasi Baru / Manual <span class="text-red-500">*</span>
-          </label>
-          <input type="text" id="customLocation" placeholder="Contoh: Tangga Darurat Lantai 3"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-slate-800"
-            oninput="validateForm()">
-        </div>
+        <div class="border-t border-slate-100 my-4"></div>
 
-        <!-- Unggah / Ambil Gambar -->
+        <!-- Wadah Baris Laporan Dinamis -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">
-            Foto Bukti Kebersihan <span class="text-red-500">*</span>
-          </label>
+          <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center justify-between">
+            <span>Daftar Titik Laporan Kebersihan</span>
+            <span id="rowCountBadge" class="bg-teal-50 text-teal-700 text-xs px-2 py-0.5 rounded-full border border-teal-100">1 dari 10 Area</span>
+          </h3>
           
-          <!-- Area Klik Upload -->
-          <div id="uploadBox" onclick="triggerFileInput()"
-            class="border-2 border-dashed border-slate-300 hover:border-teal-500 rounded-2xl p-6 text-center cursor-pointer transition-all bg-slate-50 hover:bg-teal-50/20 flex flex-col items-center justify-center min-h-[160px]">
-            
-            <div id="uploadPrompt" class="space-y-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <div class="text-sm font-semibold text-slate-600">Ambil Foto atau Pilih dari Galeri</div>
-              <div class="text-xs text-slate-400">Ketuk di sini untuk mengambil foto langsung / galeri</div>
-            </div>
-
-            <!-- Preview Gambar -->
-            <div id="imagePreviewContainer" class="hidden w-full space-y-3">
-              <img id="imagePreview" src="#" alt="Preview Foto" class="max-h-60 rounded-xl mx-auto border shadow-sm object-cover">
-              <div class="text-xs text-teal-600 font-medium flex items-center justify-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Foto siap diupload</span>
-              </div>
-              <button type="button" onclick="cancelImage(event)" class="text-xs text-red-500 hover:text-red-700 underline font-medium block mx-auto">
-                Ganti/Hapus Foto
-              </button>
-            </div>
+          <div id="dynamicRowsContainer" class="space-y-4">
+            <!-- Baris laporan akan digenerasi dinamis oleh JS di sini -->
           </div>
-          
-          <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="previewFile()">
         </div>
+
+        <!-- Tombol Tambah Baris -->
+        <button type="button" id="addRowBtn" onclick="addNewRow()"
+          class="w-full py-3 px-4 border-2 border-dashed border-teal-200 hover:border-teal-500 text-teal-600 hover:text-teal-700 font-bold rounded-xl text-sm transition-all flex items-center justify-center space-x-1 bg-teal-50/10 hover:bg-teal-50/40">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Tambah Titik Lokasi Baru</span>
+        </button>
+
+        <div class="border-t border-slate-100 my-4"></div>
 
         <!-- Tombol Submit -->
         <button type="submit" id="submitBtn" disabled
           class="w-full py-4 px-6 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed transition-all shadow-md flex items-center justify-center space-x-2">
-          <span>Kirim Laporan</span>
+          <span>Kirim Semua Laporan</span>
         </button>
 
       </form>
@@ -160,10 +134,10 @@
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
-    <div class="bg-white rounded-2xl p-8 max-w-xs w-full text-center space-y-4 shadow-2xl">
+    <div class="bg-white rounded-2xl p-8 max-w-xs w-full text-center space-y-4 shadow-2xl mx-4">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
-      <h3 class="text-lg font-bold text-slate-800">Sedang Mengirim...</h3>
-      <p class="text-sm text-slate-500">Mengompresi gambar dan mengunggah ke Google Drive.</p>
+      <h3 class="text-lg font-bold text-slate-800">Sedang Memproses...</h3>
+      <p id="loadingText" class="text-sm text-slate-500">Mempersiapkan kompresi gambar dan mengunggah ke Google Drive.</p>
     </div>
   </div>
 
@@ -172,11 +146,13 @@
     <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
       <div id="modalIconContainer" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center"></div>
       <h3 id="modalTitle" class="text-lg font-bold text-slate-800">Status</h3>
-      <p id="modalMessage" class="text-sm text-slate-500"></p>
+      <div class="max-h-40 overflow-y-auto pr-1 text-left custom-scrollbar" id="modalMessageContainer">
+        <p id="modalMessage" class="text-sm text-slate-500 whitespace-pre-line text-center"></p>
+      </div>
       
       <div class="space-y-2 pt-2">
         <a id="modalDriveLink" href="#" target="_blank" class="hidden w-full py-2.5 px-4 bg-teal-100 hover:bg-teal-200 text-teal-800 font-semibold rounded-xl text-sm transition-all flex items-center justify-center space-x-1">
-          <span>Buka Foto di Drive</span>
+          <span>Buka Folder di Drive</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
@@ -195,102 +171,228 @@
 
   <script>
     // =========================================================================
-    // CONFIGURATION: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-    // (Sudah otomatis menggunakan URL Web App ter-update Anda)
+    // CONFIGURATION: GOOGLE APPS SCRIPT WEB APP URL
     // =========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-Gv4s2mRo9PF64GnuL2kXu_D8Od6N7tm_qK_qrORZdMU-JqaPFOsEPCqYjyQgDKFy/exec";
 
-    // 1. DATA TITIK LOKASI (Dihasilkan secara dinamis sesuai struktur file terlampir Anda)
+    // 1. DATA MASTER TITIK LOKASI (Dihasilkan secara dinamis sesuai struktur sub-area)
     const masterLocations = [];
 
     // Menghasilkan R&D Sub Area 1 - 15
-    for (let i = 1; i <= 15; i++) {
-      masterLocations.push(`R&D Sub Area ${i}`);
-    }
+    for (let i = 1; i <= 15; i++) masterLocations.push(`R&D Sub Area ${i}`);
     // Menghasilkan Gudang Sub Area 1 - 26
-    for (let i = 1; i <= 26; i++) {
-      masterLocations.push(`Gudang Sub Area ${i}`);
-    }
+    for (let i = 1; i <= 26; i++) masterLocations.push(`Gudang Sub Area ${i}`);
     // Menghasilkan HRGA Sub Area 1 - 19
-    for (let i = 1; i <= 19; i++) {
-      masterLocations.push(`HRGA Sub Area ${i}`);
-    }
+    for (let i = 1; i <= 19; i++) masterLocations.push(`HRGA Sub Area ${i}`);
     // Menghasilkan Produksi Sub Area 1 - 83
-    for (let i = 1; i <= 83; i++) {
-      masterLocations.push(`Produksi Sub Area ${i}`);
-    }
+    for (let i = 1; i <= 83; i++) masterLocations.push(`Produksi Sub Area ${i}`);
     
-    // Tambahkan opsi kustom di akhir daftar
     masterLocations.push("Lainnya (Tulis Manual)");
 
-    let selectedImageBase64 = "";
+    // Pelacakan baris aktif di formulir
+    let activeRows = []; 
+    let rowDataStore = {}; // Menyimpan data spesifik baris: { [rowId]: { base64: "", selectedLocation: "", customLocation: "" } }
 
-    // Set tanggal default ke hari ini
     document.addEventListener("DOMContentLoaded", function() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('inputDate').value = today;
       
-      // Inisialisasi dropdown pencarian
-      renderDropdownOptions(masterLocations);
+      // Inisialisasi baris pertama secara otomatis saat halaman dibuka
+      addNewRow();
       
-      // Tutup dropdown ketika mengklik di luar elemen pencarian
+      // Menutup panel dropdown jika pengguna mengklik di luar area input combobox pencarian
       document.addEventListener('click', function(e) {
-        const searchInput = document.getElementById('locationSearch');
-        const dropdown = document.getElementById('locationDropdown');
-        if (e.target !== searchInput && !dropdown.contains(e.target)) {
-          hideDropdown();
-        }
+        activeRows.forEach(rowId => {
+          const searchInput = document.getElementById(`locationSearch-${rowId}`);
+          const dropdown = document.getElementById(`locationDropdown-${rowId}`);
+          if (searchInput && dropdown && e.target !== searchInput && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
       });
     });
 
-    // Menampilkan daftar opsi lokasi ke dalam dropdown panel
-    function renderDropdownOptions(list) {
-      const container = document.getElementById('locationOptionsList');
+    // Menambahkan baris input baru ke formulir (Maksimal 10)
+    function addNewRow() {
+      if (activeRows.length >= 10) {
+        return;
+      }
+      
+      // Tentukan ID numerik unik untuk baris baru
+      let nextId = 1;
+      while (activeRows.includes(nextId)) {
+        nextId++;
+      }
+      
+      activeRows.push(nextId);
+      rowDataStore[nextId] = { base64: "", selectedLocation: "", customLocation: "" };
+      
+      const container = document.getElementById('dynamicRowsContainer');
+      
+      // Struktur HTML satu baris laporan
+      const cardHTML = `
+        <div id="rowCard-${nextId}" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-4 shadow-sm relative animate-fadeIn">
+          
+          <!-- Tombol Hapus Baris (Disembunyikan jika hanya tersisa 1 baris) -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-teal-600 bg-teal-50/80 px-2.5 py-1 rounded-lg">Laporan Area #${activeRows.length}</span>
+            <button type="button" onclick="removeRow(${nextId})" id="deleteBtn-${nextId}" class="text-xs text-red-500 hover:text-red-700 font-bold flex items-center space-x-0.5 transition-colors ${activeRows.length === 1 ? 'hidden' : ''}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Hapus</span>
+            </button>
+          </div>
+
+          <!-- Pilihan Lokasi dengan Pencarian -->
+          <div class="relative">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Cari Titik Lokasi <span class="text-red-500">*</span></label>
+            <div class="relative">
+              <input type="text" id="locationSearch-${nextId}" placeholder="Ketik lokasi (misal: R&D, Gudang, Produksi)..." autocomplete="off"
+                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-sm font-medium pr-8"
+                onfocus="showDropdown(${nextId})" oninput="filterLocations(${nextId})">
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Dropdown Filter Lokasi -->
+            <div id="locationDropdown-${nextId}" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto custom-scrollbar">
+              <div id="optionsList-${nextId}"></div>
+            </div>
+          </div>
+
+          <!-- Tulis Manual (Hanya Muncul jika pilih 'Lainnya') -->
+          <div id="customLocationWrapper-${nextId}" class="hidden">
+            <label for="customLocation-${nextId}" class="block text-xs font-semibold text-slate-600 mb-1">Nama Lokasi Kustom <span class="text-red-500">*</span></label>
+            <input type="text" id="customLocation-${nextId}" placeholder="Masukkan lokasi manual"
+              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 text-sm"
+              oninput="handleCustomLocationInput(${nextId})">
+          </div>
+
+          <!-- Input File Foto Area -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Ambil Foto Area <span class="text-red-500">*</span></label>
+            
+            <div id="uploadBox-${nextId}" onclick="triggerRowFileInput(${nextId})"
+              class="border-2 border-dashed border-slate-200 hover:border-teal-500 rounded-xl p-4 text-center cursor-pointer transition-all bg-slate-50 hover:bg-teal-50/10 flex flex-col items-center justify-center min-h-[100px]">
+              
+              <div id="uploadPrompt-${nextId}" class="space-y-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                </svg>
+                <div class="text-xs font-semibold text-slate-600">Tekan untuk Mengambil Foto</div>
+              </div>
+
+              <!-- Preview Area Gambar -->
+              <div id="previewContainer-${nextId}" class="hidden w-full space-y-2">
+                <img id="previewImg-${nextId}" src="#" alt="Preview" class="max-h-40 rounded-lg mx-auto border object-cover">
+                <button type="button" onclick="cancelRowImage(event, ${nextId})" class="text-[11px] text-red-500 hover:text-red-700 font-bold block mx-auto underline">
+                  Hapus & Ganti Foto
+                </button>
+              </div>
+            </div>
+
+            <input type="file" id="fileInput-${nextId}" accept="image/*" class="hidden" onchange="processRowFile(${nextId})">
+          </div>
+        </div>
+      `;
+      
+      container.insertAdjacentHTML('beforeend', cardHTML);
+      
+      // Render opsi lokasi awal pada baris yang baru saja ditambahkan
+      renderDropdownOptions(nextId, masterLocations);
+      
+      updateUIElements();
+      validateForm();
+    }
+
+    // Menghapus baris tertentu dari formulir
+    function removeRow(rowId) {
+      if (activeRows.length <= 1) return;
+      
+      const card = document.getElementById(`rowCard-${rowId}`);
+      if (card) card.remove();
+      
+      activeRows = activeRows.filter(id => id !== rowId);
+      delete rowDataStore[rowId];
+      
+      updateUIElements();
+      validateForm();
+    }
+
+    // Perbarui label penomoran baris & tombol hapus di setiap baris yang tersisa
+    function updateUIElements() {
+      activeRows.forEach((rowId, index) => {
+        const cardLabel = document.querySelector(`#rowCard-${rowId} span.bg-teal-50`);
+        if (cardLabel) cardLabel.textContent = `Laporan Area #${index + 1}`;
+        
+        const deleteBtn = document.getElementById(`deleteBtn-${rowId}`);
+        if (deleteBtn) {
+          if (activeRows.length === 1) {
+            deleteBtn.classList.add('hidden');
+          } else {
+            deleteBtn.classList.remove('hidden');
+          }
+        }
+      });
+
+      // Update badge jumlah baris aktif di atas kontainer
+      document.getElementById('rowCountBadge').textContent = `${activeRows.length} dari 10 Area`;
+
+      // Kelola keterlihatan tombol tambah baris baru (maksimal 10)
+      const addRowBtn = document.getElementById('addRowBtn');
+      if (activeRows.length >= 10) {
+        addRowBtn.classList.add('hidden');
+      } else {
+        addRowBtn.classList.remove('hidden');
+      }
+    }
+
+    // Menampilkan panel dropdown lokasi pada baris tertentu
+    function showDropdown(rowId) {
+      const dropdown = document.getElementById(`locationDropdown-${rowId}`);
+      dropdown.classList.remove('hidden');
+      filterLocations(rowId);
+    }
+
+    // Memfilter lokasi yang diketikkan pengguna
+    function filterLocations(rowId) {
+      const query = document.getElementById(`locationSearch-${rowId}`).value.toLowerCase();
+      const filtered = masterLocations.filter(loc => loc.toLowerCase().includes(query));
+      renderDropdownOptions(rowId, filtered);
+    }
+
+    // Menampilkan daftar opsi ke dalam panel dropdown lokasi
+    function renderDropdownOptions(rowId, list) {
+      const container = document.getElementById(`optionsList-${rowId}`);
       container.innerHTML = "";
       
       if (list.length === 0) {
         container.innerHTML = `
-          <div class="px-4 py-3 text-sm text-slate-400 italic">
-            Lokasi tidak ditemukan. Silakan cari "Lainnya" untuk menulis secara manual.
-          </div>
+          <div class="px-4 py-2.5 text-xs text-slate-400 italic">Lokasi tidak ditemukan.</div>
         `;
         return;
       }
 
       list.forEach(item => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = "px-4 py-2.5 hover:bg-teal-50 cursor-pointer text-sm font-medium transition-colors text-slate-700 border-b border-slate-100 last:border-0";
-        optionDiv.textContent = item;
-        optionDiv.onclick = () => selectOption(item);
-        container.appendChild(optionDiv);
+        const div = document.createElement('div');
+        div.className = "px-4 py-2 hover:bg-teal-50 cursor-pointer text-xs font-medium transition-colors text-slate-700 border-b border-slate-100 last:border-0";
+        div.textContent = item;
+        div.onclick = () => selectLocationOption(rowId, item);
+        container.appendChild(div);
       });
     }
 
-    function showDropdown() {
-      document.getElementById('locationDropdown').classList.remove('hidden');
-      filterLocations(); // Tampilkan opsi sesuai teks saat ini
-    }
-
-    function hideDropdown() {
-      setTimeout(() => {
-        document.getElementById('locationDropdown').classList.add('hidden');
-      }, 200);
-    }
-
-    // Melakukan filter pencarian saat user mengetik
-    function filterLocations() {
-      const query = document.getElementById('locationSearch').value.toLowerCase();
-      const filtered = masterLocations.filter(loc => loc.toLowerCase().includes(query));
-      renderDropdownOptions(filtered);
-    }
-
-    // Memilih lokasi dari dropdown
-    function selectOption(value) {
-      document.getElementById('locationSearch').value = value;
-      document.getElementById('selectedLocation').value = value;
+    // Memilih lokasi dari panel dropdown
+    function selectLocationOption(rowId, value) {
+      document.getElementById(`locationSearch-${rowId}`).value = value;
+      rowDataStore[rowId].selectedLocation = value;
       
-      const customWrapper = document.getElementById('customLocationWrapper');
-      const customInput = document.getElementById('customLocation');
+      const customWrapper = document.getElementById(`customLocationWrapper-${rowId}`);
+      const customInput = document.getElementById(`customLocation-${rowId}`);
 
       if (value === "Lainnya (Tulis Manual)") {
         customWrapper.classList.remove('hidden');
@@ -300,91 +402,148 @@
         customWrapper.classList.add('hidden');
         customInput.removeAttribute('required');
         customInput.value = "";
+        rowDataStore[rowId].customLocation = "";
       }
       
-      hideDropdown();
+      document.getElementById(`locationDropdown-${rowId}`).classList.add('hidden');
       validateForm();
     }
 
-    function triggerFileInput() {
-      if (!selectedImageBase64) {
-        document.getElementById('photoInput').click();
+    function handleCustomLocationInput(rowId) {
+      rowDataStore[rowId].customLocation = document.getElementById(`customLocation-${rowId}`).value.trim();
+      validateForm();
+    }
+
+    function triggerRowFileInput(rowId) {
+      if (!rowDataStore[rowId].base64) {
+        document.getElementById(`fileInput-${rowId}`).click();
       }
     }
 
-    // Membaca file gambar dan mengompresnya di sisi klien (Client-side Compression)
-    function previewFile() {
-      const fileInput = document.getElementById('photoInput');
+    // Memproses berkas foto & melakukan kompresi ketat hingga di bawah 500 KB per foto
+    function processRowFile(rowId) {
+      const fileInput = document.getElementById(`fileInput-${rowId}`);
       const file = fileInput.files[0];
       if (!file) return;
+
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+      document.getElementById('loadingText').textContent = "Sedang mengompresi gambar...";
 
       const reader = new FileReader();
       reader.onload = function(event) {
         const img = new Image();
         img.onload = function() {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          // Membatasi ukuran gambar maksimal 1280px agar upload cepat & stabil
-          const maxDim = 1280;
-          if (width > maxDim || height > maxDim) {
-            if (width > height) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            } else {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Ubah ke format JPEG berkualitas 75%
-          selectedImageBase64 = canvas.toDataURL('image/jpeg', 0.75);
-
-          document.getElementById('imagePreview').src = selectedImageBase64;
-          document.getElementById('uploadPrompt').classList.add('hidden');
-          document.getElementById('imagePreviewContainer').classList.remove('hidden');
-          
-          validateForm();
+          // Melakukan kompresi progresif agar ukuran berkas akhir stabil < 500KB (target batas aman 480 KB)
+          compressImageToLimit(img, 1200, 1200, 480000)
+            .then(compressedBase64 => {
+              rowDataStore[rowId].base64 = compressedBase64;
+              
+              document.getElementById(`previewImg-${rowId}`).src = compressedBase64;
+              document.getElementById(`uploadPrompt-${rowId}`).classList.add('hidden');
+              document.getElementById(`previewContainer-${rowId}`).classList.remove('hidden');
+              
+              document.getElementById('loadingOverlay').classList.add('hidden');
+              validateForm();
+            })
+            .catch(err => {
+              document.getElementById('loadingOverlay').classList.add('hidden');
+              showModal(false, "Gagal Mengolah Foto", "Kompresor gagal memproses foto Anda.");
+            });
         };
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function cancelImage(event) {
+    function cancelRowImage(event, rowId) {
       event.stopPropagation();
-      selectedImageBase64 = "";
-      document.getElementById('photoInput').value = "";
-      document.getElementById('uploadPrompt').classList.remove('hidden');
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      
+      rowDataStore[rowId].base64 = "";
+      document.getElementById(`fileInput-${rowId}`).value = "";
+      document.getElementById(`uploadPrompt-${rowId}`).classList.remove('hidden');
+      document.getElementById(`previewContainer-${rowId}`).classList.add('hidden');
+      
       validateForm();
     }
 
-    // Validasi form agar tombol kirim aktif hanya jika data lengkap
+    /**
+     * Algoritma Kompresi Gambar Pintar
+     * Mengecilkan dimensi dan kompres kualitas JPEG secara iteratif hingga total ukuran di bawah batas spesifik
+     */
+    function compressImageToLimit(img, maxWidth, maxHeight, maxSizeBytes) {
+      return new Promise((resolve) => {
+        let canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Pertahankan rasio aspek gambar saat melakukan resizing dimensi
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = 0.85; // Kualitas awal (85%)
+        let base64 = canvas.toDataURL('image/jpeg', quality);
+        
+        // Memeriksa estimasi ukuran byte string base64 secara dinamis
+        while ((base64.length * 0.75) > maxSizeBytes && quality > 0.15) {
+          quality -= 0.1;
+          base64 = canvas.toDataURL('image/jpeg', quality);
+        }
+        
+        // Jika ukuran file masih melampaui batas, paksa dimensi diperkecil kembali hingga 70%
+        if ((base64.length * 0.75) > maxSizeBytes) {
+          canvas.width = width * 0.7;
+          canvas.height = height * 0.7;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          base64 = canvas.toDataURL('image/jpeg', 0.6); // Kualitas diturunkan ke 60%
+        }
+
+        resolve(base64);
+      });
+    }
+
+    // Memverifikasi apakah seluruh inputan wajib di formulir sudah lengkap dan benar
     function validateForm() {
       const dateVal = document.getElementById('inputDate').value;
       const fullNameVal = document.getElementById('inputFullName').value.trim();
-      const selectedLoc = document.getElementById('selectedLocation').value;
-      const customLocVal = document.getElementById('customLocation').value;
       const submitBtn = document.getElementById('submitBtn');
 
-      let isLocationValid = false;
-      if (selectedLoc === "Lainnya (Tulis Manual)") {
-        isLocationValid = customLocVal.trim().length > 0;
-      } else {
-        isLocationValid = selectedLoc !== "";
+      let allRowsValid = true;
+
+      // Evaluasi kelayakan masing-masing baris aktif
+      for (let i = 0; i < activeRows.length; i++) {
+        const id = activeRows[i];
+        const data = rowDataStore[id];
+        
+        let isLocationValid = false;
+        if (data.selectedLocation === "Lainnya (Tulis Manual)") {
+          isLocationValid = data.customLocation.length > 0;
+        } else {
+          isLocationValid = data.selectedLocation !== "";
+        }
+        
+        const isPhotoValid = data.base64 !== "";
+
+        if (!isLocationValid || !isPhotoValid) {
+          allRowsValid = false;
+          break;
+        }
       }
 
-      const isValid = dateVal && fullNameVal && isLocationValid && selectedImageBase64;
+      const isFormValid = dateVal && fullNameVal && allRowsValid;
 
-      if (isValid) {
+      if (isFormValid) {
         submitBtn.removeAttribute('disabled');
         submitBtn.className = "w-full py-4 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl cursor-pointer transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 active:scale-[0.98]";
       } else {
@@ -403,25 +562,33 @@
 
       const dateStr = document.getElementById('inputDate').value;
       const fullNameStr = document.getElementById('inputFullName').value.trim();
-      const selectLoc = document.getElementById('selectedLocation').value;
-      let finalLocation = selectLoc;
 
-      if (selectLoc === "Lainnya (Tulis Manual)") {
-        finalLocation = document.getElementById('customLocation').value;
-      }
+      // Struktur data pengiriman paket
+      const itemsPayload = activeRows.map(rowId => {
+        const data = rowDataStore[rowId];
+        let location = data.selectedLocation;
+        
+        if (location === "Lainnya (Tulis Manual)") {
+          location = data.customLocation;
+        }
+        
+        return {
+          base64Data: data.base64,
+          locationStr: location
+        };
+      });
 
       // Tampilkan Loading
       document.getElementById('loadingOverlay').classList.remove('hidden');
+      document.getElementById('loadingText').textContent = `Mengirim ${itemsPayload.length} foto ke Drive. Harap tidak menutup halaman...`;
 
-      // Siapkan payload data JSON untuk dikirim ke API
       const payload = {
-        base64Data: selectedImageBase64,
         dateStr: dateStr,
-        locationStr: finalLocation,
-        fullName: fullNameStr
+        fullName: fullNameStr,
+        items: itemsPayload
       };
 
-      // Mengirim POST request dengan Content-Type: text/plain untuk melewati CORS preflight OPTIONS
+      // POST request menggunakan tipe teks polos untuk mengesampingkan masalah CORS
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
         headers: {
@@ -439,51 +606,43 @@
         document.getElementById('loadingOverlay').classList.add('hidden');
         
         if (response.success) {
-          showModal(
-            true, 
-            "Upload Berhasil!", 
-            "Laporan kebersihan dari '" + fullNameStr + "' di '" + finalLocation + "' berhasil diunggah dengan format nama file:\n\n" + response.fileName, 
-            response.fileUrl
-          );
-          resetForm();
+          let detailMessage = `Terima kasih, ${fullNameStr}.\nSebanyak ${response.results.length} laporan area berhasil dikirim ke Google Drive:\n\n`;
+          response.results.forEach((res, i) => {
+            detailMessage += `${i+1}. ${res.fileName}\n`;
+          });
+          
+          showModal(true, "Berhasil Terkirim!", detailMessage, response.results[0].fileUrl);
+          resetFullForm();
         } else {
-          showModal(
-            false, 
-            "Gagal Mengunggah", 
-            "Terjadi kendala saat mengunggah foto ke Google Drive: " + response.error, 
-            null
-          );
+          showModal(false, "Gagal Mengunggah", "Terjadi kegagalan saat menyimpan: " + response.error, null);
         }
       })
       .catch(function(error) {
         document.getElementById('loadingOverlay').classList.add('hidden');
         showModal(
           false, 
-          "Koneksi Bermasalah", 
-          "Gagal menghubungi server Google. Pastikan URL Apps Script yang dimasukkan sudah benar.\nDetail: " + error.message, 
+          "Koneksi Terputus", 
+          "Gagal menghubungi server Google. Pastikan sinyal internet Anda stabil atau kurangi jumlah upload foto.\n\nDetail Error: " + error.message, 
           null
         );
       });
     }
 
-    // Mengosongkan form ke keadaan semula
-    function resetForm() {
+    // Reset total form kembali ke kondisi semula
+    function resetFullForm() {
       document.getElementById('checklistForm').reset();
-      selectedImageBase64 = "";
-      document.getElementById('photoInput').value = "";
-      document.getElementById('selectedLocation').value = "";
-      document.getElementById('locationSearch').value = "";
-      document.getElementById('uploadPrompt').classList.remove('hidden');
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      document.getElementById('customLocationWrapper').classList.add('hidden');
+      document.getElementById('dynamicRowsContainer').innerHTML = "";
+      
+      activeRows = [];
+      rowDataStore = {};
       
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('inputDate').value = today;
       
-      validateForm();
+      addNewRow();
     }
 
-    // Menampilkan Modal Dialog Hasil Status
+    // Menampilkan Modal Dialog Status
     function showModal(isSuccess, title, msg, linkUrl) {
       const modal = document.getElementById('statusModal');
       const iconContainer = document.getElementById('modalIconContainer');
@@ -502,7 +661,6 @@
           </svg>
         `;
         if (linkUrl) {
-          linkBtn.href = linkUrl;
           linkBtn.classList.remove('hidden');
         } else {
           linkBtn.classList.add('hidden');
@@ -520,7 +678,6 @@
       modal.classList.remove('hidden');
     }
 
-    // Menutup Modal Dialog
     function closeModal() {
       document.getElementById('statusModal').classList.add('hidden');
     }
